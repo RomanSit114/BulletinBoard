@@ -1,8 +1,11 @@
 
 {% block title %}
-Объявления
+<h1>Добро пожаловать {{user.username}}!</h1>
 {% endblock title %}
 
 {% block content %}
-<h1>Все объявления</h1>
+<h3>Все объявления:</h3>
+{% for ad in ads %}
+    <a href="{% url 'ad' ad.id %}">{{ad.title}}<br><br></a>
+{% endfor %}
 {% endblock content %}
