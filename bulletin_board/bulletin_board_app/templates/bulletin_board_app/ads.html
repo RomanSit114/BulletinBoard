@@ -1,9 +1,10 @@
 {% extends 'layout/base.html' %}
 {% block title %}
-<h1>Добро пожаловать {{user.username}}!</h1>
+Главная страница
 {% endblock title %}
 
 {% block content %}
+    <h1>Добро пожаловать {{user.username}}!</h1>
     <h3>Все объявления:</h3>
     {% if ads %}
         {% for ad in ads %}
@@ -16,5 +17,5 @@
         <h6>Объявлений пока к сожалению нет:(</h6>
     {% endif %}
     <br><br>
-    <a class="btn btn-primary" href="{% url 'main_page' %}">Добавить объявление</a>
+    <a class="btn btn-primary" href="{% url 'ad_create' %}">Добавить объявление</a>
 {% endblock content %}

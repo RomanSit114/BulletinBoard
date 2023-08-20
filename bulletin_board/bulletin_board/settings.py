@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.flatpages',
 
     'bulletin_board_app',
+
+    'django_filters',
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,17 @@
+{% extends 'layout/base.html' %}
+{% block title %}
+Создание нового объявления
+{% endblock title %}
+
+{% block content %}
+
+<h3>Создание нового объявления</h3>
+
+<form method="POST">
+ {% csrf_token %}
+ {{ form }}
+   <!-- Теперь нам нужна только готовая форма и кнопка -->
+   <input class="btn btn-success" type="submit" value="Создать">
+</form>
+
+{% endblock content %}

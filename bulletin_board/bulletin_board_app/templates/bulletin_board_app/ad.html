@@ -11,7 +11,9 @@
         Дата создания: {{ad.dateCreation}}<br>
         Категория: {{ad.adCategory}}<br><br><br>
         {{ad.text}}<br><br>
-        <a class="btn btn-primary" href="{% url 'main_page' %}">На главную</a>
+        <a class="btn btn-primary" href="{% url 'main_page' %}">На главную</a><br><br>
+        <a class="btn btn-primary" href="{% url 'ad_update' ad.id %}">Редактировать объявление</a><br><br>
+        <a class="btn btn-primary" href="{% url 'ad_delete' ad.id %}">Удалить</a>
     {% endblock content %}
 </body>
 </html>

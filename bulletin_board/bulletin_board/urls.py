@@ -16,8 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.shortcuts import redirect
+
+def redirect_to_ads(request):
+    return redirect('ads/')
 
 urlpatterns = [
+    path('', redirect_to_ads),
     path('admin/', admin.site.urls),
     path('pages/', include('django.contrib.flatpages.urls')),
     path('ads/', include('bulletin_board_app.urls')),

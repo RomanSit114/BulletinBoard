@@ -52,6 +52,9 @@ class Ad(models.Model):
     def __str__(self):
         return f"{self.title}"
 
+    def get_absolute_url(self):
+        return f'/ads/ad/{self.id}'
+
 # class AdCategory(models.Model):
 #     adThrough = models.ForeignKey(Ad, on_delete=models.CASCADE)
 #     categoryThrough = models.ForeignKey(Category, on_delete=models.CASCADE)
