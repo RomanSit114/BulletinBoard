@@ -4,9 +4,17 @@
 {% endblock title %}
 
 {% block content %}
-<h3>Все объявления:</h3>
-{% for ad in ads %}
-    <a href="{% url 'ad' ad.id %}">{{ad.title}}<br><br></a>
-{% endfor %}
-<a class="btn btn-primary" href="{% url 'main_page' %}">Добавить объявление</a>
+    <h3>Все объявления:</h3>
+    {% if ads %}
+        {% for ad in ads %}
+            <a href="{% url 'ad' ad.id %}">{{ad.title}} (Категория: {{ad.adCategory}})<br><br></a>
+        {% endfor %}
+
+        {% include 'bulletin_board_app/parts/paginator.html' %}
+
+    {% else %}
+        <h6>Объявлений пока к сожалению нет:(</h6>
+    {% endif %}
+    <br><br>
+    <a class="btn btn-primary" href="{% url 'main_page' %}">Добавить объявление</a>
 {% endblock content %}
