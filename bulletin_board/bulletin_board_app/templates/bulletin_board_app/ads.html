@@ -1,4 +1,4 @@
-
+{% extends 'layout/base.html' %}
 {% block title %}
 <h1>Добро пожаловать {{user.username}}!</h1>
 {% endblock title %}
@@ -8,4 +8,5 @@
 {% for ad in ads %}
     <a href="{% url 'ad' ad.id %}">{{ad.title}}<br><br></a>
 {% endfor %}
+<a class="btn btn-primary" href="{% url 'main_page' %}">Добавить объявление</a>
 {% endblock content %}

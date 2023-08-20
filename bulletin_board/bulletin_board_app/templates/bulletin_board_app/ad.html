@@ -1,3 +1,4 @@
+{% extends 'layout/base.html' %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,10 +6,12 @@
     <title>{{ad.title}}</title>
 </head>
 <body>
-    Автор: {{ad.author}}<br>
-    Дата создания: {{ad.dateCreation}}<br>
-    Категория: {{ad.adCategory}}<br><br><br>
-    {{ad.text}}<br><br>
-    <a class="btn btn-primary" href="{% url 'main_page' %}">На главную</a>
+    {% block content %}
+        Автор: {{ad.author}}<br>
+        Дата создания: {{ad.dateCreation}}<br>
+        Категория: {{ad.adCategory}}<br><br><br>
+        {{ad.text}}<br><br>
+        <a class="btn btn-primary" href="{% url 'main_page' %}">На главную</a>
+    {% endblock content %}
 </body>
 </html>
