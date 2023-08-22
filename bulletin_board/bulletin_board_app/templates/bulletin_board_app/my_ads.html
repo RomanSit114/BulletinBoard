@@ -1,0 +1,23 @@
+{% extends 'layout/base.html' %}
+{% block title %}
+Мои объявления
+{% endblock title %}
+
+{% block content %}
+    <h1>Добро пожаловать {{user.username}}!</h1>
+    <h3>Мои объявления:</h3>
+    {% if ads %}
+        {% for ad in ads %}
+            {% if user.username == ad.author.username %}
+                <a href="{% url 'ad' ad.id %}">{{ad.title}} (Категория: {{ad.adCategory}})<br><br></a>
+            {% endif %}
+        {% endfor %}
+
+        {% include 'bulletin_board_app/parts/paginator.html' %}
+
+    {% else %}
+        <h6>Ваших объявлений пока к сожалению нет:(</h6>
+    {% endif %}
+    <br><br>
+    <a class="btn btn-primary" href="{% url 'ad_create' %}">Добавить объявление</a>
+{% endblock content %}

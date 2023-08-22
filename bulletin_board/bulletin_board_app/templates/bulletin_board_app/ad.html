@@ -12,8 +12,10 @@
         Категория: {{ad.adCategory}}<br><br><br>
         {{ad.text}}<br><br>
         <a class="btn btn-primary" href="{% url 'main_page' %}">На главную</a><br><br>
-        <a class="btn btn-primary" href="{% url 'ad_update' ad.id %}">Редактировать объявление</a><br><br>
-        <a class="btn btn-primary" href="{% url 'ad_delete' ad.id %}">Удалить</a>
+        {% if user.username == ad.author.username %}
+            <a class="btn btn-primary" href="{% url 'ad_update' ad.id %}">Редактировать объявление</a><br><br>
+            <a class="btn btn-primary" href="{% url 'ad_delete' ad.id %}">Удалить</a>
+        {% endif %}
     {% endblock content %}
 </body>
 </html>
