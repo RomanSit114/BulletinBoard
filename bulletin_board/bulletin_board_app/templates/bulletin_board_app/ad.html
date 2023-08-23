@@ -9,8 +9,15 @@
     {% block content %}
         Автор: {{ad.author}}<br>
         Дата создания: {{ad.dateCreation}}<br>
-        Категория: {{ad.adCategory}}<br><br><br>
+        Категория: {{ad.adCategory}}<br><br>
+        <h3>{{ad.title}}</h3><br>
         {{ad.text}}<br><br>
+        {% if ad.image %}
+            <img src="{{ ad.image.url }}" alt="{{ ad.title }}" width='600' height='auto'><br><br>
+        {% endif %}
+        {% if ad.file %}
+            Прикрепленный файл: <a href="{{ ad.file.url }}" download>{{ ad.file.name }}</a><br><br>
+        {% endif %}<br>
         <a class="btn btn-primary" href="{% url 'main_page' %}">На главную</a><br><br>
         {% if user.username == ad.author.username %}
             <a class="btn btn-primary" href="{% url 'ad_update' ad.id %}">Редактировать объявление</a><br><br>

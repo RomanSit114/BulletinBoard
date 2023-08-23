@@ -1,5 +1,7 @@
 from django.urls import path
 from .views import AdsList,MyAdsList, AdsDetailView, AdsCreateView, AdsUpdateView, AdsDeleteView
+from django.conf import settings
+from django.conf.urls.static import static
 
 # app_name = 'bulletin_board_app'
 urlpatterns = [
@@ -9,4 +11,4 @@ urlpatterns = [
     path('ad/create/', AdsCreateView.as_view(), name='ad_create'),
     path('ad/update/<int:pk>/', AdsUpdateView.as_view(), name='ad_update'),
     path('ad/delete/<int:pk>/', AdsDeleteView.as_view(), name='ad_delete'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

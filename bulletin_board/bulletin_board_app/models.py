@@ -44,8 +44,9 @@ class Ad(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=128)
     text = models.TextField()
-    image = models.ImageField(upload_to=None, height_field=None, width_field=None, max_length=100, blank=True)
-    file = models.FileField(upload_to='uploads/', blank=True)
+    # image = models.ImageField(upload_to=None, height_field=None, width_field=None, max_length=100, blank=True)
+    image = models.ImageField(blank=True)
+    file = models.FileField(blank=True)
     adCategory = models.ForeignKey(Category, on_delete=models.CASCADE)
     dateCreation = models.DateTimeField(auto_now_add=True)
 

@@ -6,6 +6,6 @@ class AdsForm(ModelForm):
         model = Ad
         # exclude = ['author']
         # fields = ['author', 'title', 'text', 'adCategory']
-        fields = ['title', 'text', 'adCategory']
+        fields = ['title', 'text', 'adCategory', 'image', 'file']
         # fields = ['title', 'text', 'adCategory']
 
