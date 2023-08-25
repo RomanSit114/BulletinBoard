@@ -16,7 +16,7 @@
             <img src="{{ ad.image.url }}" alt="{{ ad.title }}" width='600' height='auto'><br><br>
         {% endif %}
         {% if ad.video %}
-            Прикрепленное видео:<br>
+            Прикрепленное видео:<br><br>
             <video width="600" height="auto" controls>
                 <source src="{{ ad.video.url }}" type="video/mp4">
                 <source src="{{ ad.video.url }}" type="video/MOV">
@@ -24,7 +24,7 @@
                 <source src="{{ ad.video.url }}" type="video/webm">
                 <source src="{{ ad.video.url }}" type="video/mkv">
                 Ваш браузер не поддерживает видео тег.
-            </video>
+            </video><br>
         {% endif %}<br>
         {% if ad.file %}
             Прикрепленный файл: <a href="{{ ad.file.url }}" download>{{ ad.file.name }}</a><br><br>
@@ -34,7 +34,7 @@
             <a class="btn btn-primary" href="{% url 'ad_update' ad.id %}">Редактировать объявление</a><br><br>
             <a class="btn btn-primary" href="{% url 'ad_delete' ad.id %}">Удалить</a><br><br>
         {% endif %}
-        <a class="btn btn-primary" href="{% url 'main_page' %}">Откликнуться</a><br><br>
+        <a class="btn btn-primary" href="{% url 'comment_create' ad.id %}">Откликнуться</a><br><br>
     {% endblock content %}
 </body>
 </html>

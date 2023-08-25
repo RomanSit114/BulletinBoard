@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Ad
+from .models import *
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.shortcuts import render, redirect, HttpResponseRedirect
-from .forms import AdsForm
+from .forms import *
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -72,3 +72,47 @@ class AdsDeleteView(LoginRequiredMixin, DeleteView):
    template_name = 'bulletin_board_app/ad_delete.html'
    queryset = Ad.objects.all()
    success_url = '/ads/'
+
+# class AdsComments(DetailView):
+#     model = Ad
+#     template_name = 'bulletin_board_app/ad.html'
+#     context_object_name = 'ad'
+#     queryset = Ad.objects.all()
+
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'bulletin_board_app/comment_create.html'
+    # success_url = '/success-url/'
+
+    def form_valid(self, form):
+        ad_id = self.kwargs['pk']
+        ad = Ad.objects.get(pk=ad_id)
+        comment = form.save(commit=False)
+        comment.commentAuthor = self.request.user
+        comment.save()
+        ad.comments.add(comment)
+        return super().form_valid(form)
+
+class CommentsOnMyAdsList(LoginRequiredMixin, ListView): # представление, для отображения откликов, котороые оставили другие пользователи на мои объявления
+    model = Ad
+    template_name = 'bulletin_board_app/comments_on_my_ads.html'
+    context_object_name = 'ads'
+    # queryset = Ad.objects.all()
+    ordering = ['-id']
+    paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        ads_by_current_user = Ad.objects.filter(author=self.request.user) # чтобы на странице показывались только объявления авторизованного пользователя
+        user_has_ads = ads_by_current_user.exists() # проверка на то, создавал ли авторизованный на данный момент пользователь хотя бы одно объявления
+        context['user_has_ads'] = user_has_ads
+        context['ads_by_current_user'] = ads_by_current_user
+
+        ads_with_comments = []
+        for ad in context['ads_by_current_user']:
+            if ad.comments.exists():  # Проверка наличия комментариев у объявления
+                ads_with_comments.append(ad)
+
+        context['ads_with_comments'] = ads_with_comments
+        return context

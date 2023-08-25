@@ -1,0 +1,33 @@
+{% extends 'layout/base.html' %}
+{% block title %}
+Отклики
+{% endblock title %}
+
+{% block content %}
+    <h1>Добро пожаловать {{user.username}}!</h1>
+    <h3>Отклики на ваши объявления:</h3>
+    {% if user_has_ads %}
+        {% if ads_with_comments %}
+            {% for ad in ads_by_current_user %}
+                {% for comment in ad.comments.all %}
+                    <div class="ad-block card mb-4">
+                        <div class="card-body">
+                            <h3>{{comment.commentAuthor}} оставил отклик на ваше объявление <a href="{% url 'ad' ad.id %}" class="card-title">{{ad.title}} (Категория: {{ad.adCategory}})<br><br></a></h3>
+                            <p class="card-text">{{ comment.text }}</p><br>
+                        </div>
+                    </div><br>
+                {% endfor %}
+            {% endfor %}
+
+            {% include 'bulletin_board_app/parts/paginator.html' %}
+
+        {% else %}
+            <h6>На ваши объявления пока еще никто не оставил отклик:(</h6>
+        {% endif %}
+
+    {% else %}
+        <h6>Ваших объявлений пока к сожалению нет:(</h6>
+        <br>
+        <a class="btn btn-primary" href="{% url 'ad_create' %}">Добавить объявление</a>
+    {% endif %}
+{% endblock content %}

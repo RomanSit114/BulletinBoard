@@ -41,16 +41,27 @@ class Category(models.Model):
     def __str__(self):
         return f"{self.categoryType}"
 
+class Comment(models.Model):
+    text = models.TextField()
+    dateCreation = models.DateTimeField(auto_now_add=True)
+    commentAuthor = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.commentAuthor}"
+
+    def get_absolute_url(self):
+        return f'/ads/'
+
 class Ad(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=128)
     text = models.TextField()
-    # image = models.ImageField(upload_to=None, height_field=None, width_field=None, max_length=100, blank=True)
     image = models.ImageField(upload_to='images_uploaded', blank=True, null=True)
     video = models.FileField(upload_to='videos_uploaded', blank=True, null=True, validators=[FileExtensionValidator(allowed_extensions=['MOV', 'avi', 'mp4', 'webm', 'mkv'])])
     file = models.FileField(upload_to='files_uploaded', blank=True, null=True)
     adCategory = models.ForeignKey(Category, on_delete=models.CASCADE)
     dateCreation = models.DateTimeField(auto_now_add=True)
+    comments = models.ManyToManyField(Comment, related_name='ads_comments')
 
     def __str__(self):
         return f"{self.title}"
@@ -62,11 +73,5 @@ class Ad(models.Model):
 #     adThrough = models.ForeignKey(Ad, on_delete=models.CASCADE)
 #     categoryThrough = models.ForeignKey(Category, on_delete=models.CASCADE)
 
-class Comment(models.Model):
-    text = models.TextField()
-    dateCreation = models.DateTimeField(auto_now_add=True)
-    commentAuthor = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    def __str__(self):
-        return f"{self.commentAuthor}"
 
