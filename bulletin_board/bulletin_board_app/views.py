@@ -1,4 +1,3 @@
-
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Ad
@@ -10,6 +9,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django import forms
+from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
 
 class AdsList(ListView):
     model = Ad

@@ -1,3 +1,4 @@
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -45,8 +46,9 @@ class Ad(models.Model):
     title = models.CharField(max_length=128)
     text = models.TextField()
     # image = models.ImageField(upload_to=None, height_field=None, width_field=None, max_length=100, blank=True)
-    image = models.ImageField(blank=True)
-    file = models.FileField(blank=True)
+    image = models.ImageField(upload_to='images_uploaded', blank=True, null=True)
+    video = models.FileField(upload_to='videos_uploaded', blank=True, null=True, validators=[FileExtensionValidator(allowed_extensions=['MOV', 'avi', 'mp4', 'webm', 'mkv'])])
+    file = models.FileField(upload_to='files_uploaded', blank=True, null=True)
     adCategory = models.ForeignKey(Category, on_delete=models.CASCADE)
     dateCreation = models.DateTimeField(auto_now_add=True)
 
