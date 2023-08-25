@@ -92,6 +92,28 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
         comment.commentAuthor = self.request.user
         comment.save()
         ad.comments.add(comment)
+        comment_text = form.cleaned_data['text']
+        ad_owner_email = ad.author.email
+
+        html_content = render_to_string(
+            'bulletin_board_app/new_comment_email.html',
+            {
+                'comment_text': comment_text,
+                'ad': ad,
+                'comment_author': comment.commentAuthor,
+            }
+        )
+
+        msg = EmailMultiAlternatives(
+            subject=f"Новый отклик на ваше объявление '{ad.title}'",
+            body=f"Здравствуйте!\n\nНа ваше объявление поступил новый отклик от пользователя {comment.commentAuthor}",
+            from_email='roma.sitdikov@yandex.ru',
+            to=[ad_owner_email],
+        )
+        msg.attach_alternative(html_content, "text/html")  # добавляем html
+        msg.send()  # отсылаем
+        # print(html_content)
+
         return super().form_valid(form)
 
 class CommentsOnMyAdsList(LoginRequiredMixin, ListView): # представление, для отображения откликов, котороые оставили другие пользователи на мои объявления
