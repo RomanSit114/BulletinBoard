@@ -3,7 +3,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from .models import *
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.shortcuts import render, redirect, HttpResponseRedirect
+from django.shortcuts import render, redirect, HttpResponseRedirect, get_object_or_404
 from .forms import *
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required
@@ -11,57 +11,43 @@ from django.utils.decorators import method_decorator
 from django import forms
 from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
-# from .filters import AdFilterForm
+from decouple import config
 
-class AdsList(ListView):
+class AdsList(ListView): # Все объявления
     model = Ad
     template_name = 'bulletin_board_app/ads.html'
     context_object_name = 'ads'
-    ordering = ['-id']
+    ordering = ['-dateCreation']
     paginate_by = 10
 
-class MyAdsList(LoginRequiredMixin, ListView):
+class MyAdsList(LoginRequiredMixin, ListView): # Мои объявления
     model = Ad
     template_name = 'bulletin_board_app/my_ads.html'
     context_object_name = 'ads'
-    ordering = ['-id']
     paginate_by = 10
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.request.user.username:
-            user_ads = Ad.objects.filter(author=self.request.user.id)
-            context['ads'] = user_ads
-        return context
+    def get_queryset(self): # Для того, чтобы на странице личных объявлений показывались только объявления, созданные самим пользователем
+        return Ad.objects.filter(author=self.request.user.id).order_by('-dateCreation')
 
-class AdsDetailView(DetailView):
+class AdsDetailView(DetailView): # Показ конкретного объявления
     model = Ad
     template_name = 'bulletin_board_app/ad.html'
     context_object_name = 'ad'
     queryset = Ad.objects.all()
 
-class AdsCreateView(LoginRequiredMixin, CreateView):
-# @login_required
-# @method_decorator(login_required, name='dispatch')
-# class AdsCreateView(CreateView):
-    # permission_required = ('newapp.add_post')
+class AdsCreateView(LoginRequiredMixin, CreateView): # Создание объявления
     form_class = AdsForm
     template_name = 'bulletin_board_app/ad_create.html'
-    # success_url = '/ads/'
-
-
-    # def get_form(self, form_class=None):
-    #     form = super().get_form(form_class)
-    #     form.fields['author'].widget = forms.HiddenInput()  # Скрываем поле выбора автора
-    #     return form
 
     def form_valid(self, form):
         # Устанавливаем автора объявления в текущего пользователя
         form.instance.author = self.request.user
         return super().form_valid(form)
 
-class AdsUpdateView(LoginRequiredMixin, UpdateView):
-    # permission_required = ('newapp.add_post')
+    def get_success_url(self):
+        return reverse('ad', kwargs={'pk': self.object.pk})
+
+class AdsUpdateView(LoginRequiredMixin, UpdateView): # Редактирование объявления
     form_class = AdsForm
     template_name = 'bulletin_board_app/ad_create.html'
 
@@ -69,22 +55,18 @@ class AdsUpdateView(LoginRequiredMixin, UpdateView):
         id = self.kwargs.get('pk')
         return Ad.objects.get(pk=id)
 
-class AdsDeleteView(LoginRequiredMixin, DeleteView):
+    def get_success_url(self):
+        return reverse('ad', kwargs={'pk': self.object.pk})
+
+class AdsDeleteView(LoginRequiredMixin, DeleteView): # Удаление объявления
    template_name = 'bulletin_board_app/ad_delete.html'
    queryset = Ad.objects.all()
    success_url = '/ads/'
 
-# class AdsComments(DetailView):
-#     model = Ad
-#     template_name = 'bulletin_board_app/ad.html'
-#     context_object_name = 'ad'
-#     queryset = Ad.objects.all()
-
-class CommentCreateView(LoginRequiredMixin, CreateView):
+class CommentCreateView(LoginRequiredMixin, CreateView): # Создание отклика
     model = Comment
     form_class = CommentForm
     template_name = 'bulletin_board_app/comment_create.html'
-    # success_url = '/success-url/'
 
     def form_valid(self, form):
         ad_id = self.kwargs['pk']
@@ -108,7 +90,7 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
         msg = EmailMultiAlternatives(
             subject=f"Новый отклик на ваше объявление '{ad.title}'",
             body=f"Здравствуйте!\n\nНа ваше объявление поступил новый отклик от пользователя {comment.commentAuthor}",
-            from_email='roma.sitdikov@yandex.ru',
+            from_email=config('DEFAULT_FROM_EMAIL'),
             to=[ad_owner_email],
         )
         msg.attach_alternative(html_content, "text/html")  # добавляем html
@@ -117,28 +99,31 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
 
         return super().form_valid(form)
 
+    def get_success_url(self):
+        ad_id = self.kwargs['pk']
+        ad = Ad.objects.get(pk=ad_id)
+        return reverse('ad', kwargs={'pk': ad.id})
+
 class CommentsOnMyAdsList(LoginRequiredMixin, ListView): # представление, для отображения откликов, котороые оставили другие пользователи на мои объявления
     model = Ad
     template_name = 'bulletin_board_app/comments_on_my_ads.html'
     context_object_name = 'ads'
-    ordering = ['-id']
     paginate_by = 10
+
+    def get_queryset(self):
+        return Ad.objects.filter(author=self.request.user.id).order_by('-dateCreation')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        ads_by_current_user = Ad.objects.filter(author=self.request.user) # чтобы на странице показывались только объявления авторизованного пользователя
-        user_has_ads = ads_by_current_user.exists() # проверка на то, создавал ли авторизованный на данный момент пользователь хотя бы одно объявления
-        context['user_has_ads'] = user_has_ads
-        context['ads_by_current_user'] = ads_by_current_user
 
         ads_with_comments = []
-        for ad in context['ads_by_current_user']:
+        for ad in context['ads']:
             if ad.comments.exists():  # Проверка наличия комментариев у объявления
                 ads_with_comments.append(ad)
 
         context['ads_with_comments'] = ads_with_comments
 
-        # для фильтрации откликов
+        # для фильтрации откликов по объявлениям
         selected_ad_id = self.request.GET.get('selected_ad')
         if selected_ad_id:
             selected_ad = Ad.objects.get(id=selected_ad_id)
@@ -148,3 +133,34 @@ class CommentsOnMyAdsList(LoginRequiredMixin, ListView): # представле�
             context['comments_for_selected_ad'] = comments_for_selected_ad
 
         return context
+
+def delete_comment(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    comment.delete()
+    return redirect('comments_on_my_ads')
+
+def accept_comment(request, pk): # Принятие откликов
+    comment = get_object_or_404(Comment, pk=pk) # Получаем отклик
+    ad = comment.ads_comments.first()  # Получаем объявление, к которому относится отклик
+    author_of_ad = ad.author  # Получаем автора объявления
+    author_of_comment = comment.commentAuthor
+    context = {
+        'author_of_ad': author_of_ad,
+        'ad': ad,
+        'author_of_comment': author_of_comment
+    }
+    template_name = 'bulletin_board_app/accept_comment_email.html'
+
+    html_content = render_to_string(template_name, context)
+    msg = EmailMultiAlternatives(
+        subject=f"Здравствуйте {author_of_comment}!",
+        body=f"{author_of_ad} принял ваш отклик на объявление { ad.title }</a>",
+        from_email=config('DEFAULT_FROM_EMAIL'),
+        to=[comment.commentAuthor.email],
+    )
+    msg.attach_alternative(html_content, "text/html")  # добавляем html
+    msg.send()
+    # print(html_content)
+
+    comment.delete()
+    return redirect('comments_on_my_ads')

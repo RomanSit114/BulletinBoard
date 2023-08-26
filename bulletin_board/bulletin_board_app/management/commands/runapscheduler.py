@@ -13,6 +13,7 @@ from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from ...models import *
 from datetime import datetime, timedelta
+from decouple import config
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +32,7 @@ def send_weekly_new_ads():
 
             msg = EmailMultiAlternatives(
                 subject='Новые объявления за прошедшую неделю',
-                from_email='roma.sitdikov@yandex.ru',
+                from_email=config('DEFAULT_FROM_EMAIL'),
                 to=[user.email],
             )
             msg.attach_alternative(html_content, "text/html")
@@ -55,7 +56,7 @@ class Command(BaseCommand):
         # добавляем работу нашему задачнику
         scheduler.add_job(
             send_weekly_new_ads,
-            trigger=CronTrigger(second="*/40"),
+            trigger=CronTrigger(week="*/1"),
             id="send_weekly_new_ads",
             max_instances=1,
             replace_existing=True,

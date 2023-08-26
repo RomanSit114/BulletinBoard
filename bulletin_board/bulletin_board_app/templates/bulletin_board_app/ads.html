@@ -5,7 +5,8 @@
 
 {% block content %}
     <h1>Добро пожаловать {{user.username}}!</h1><br>
-    <h3>Все объявления:</h3>
+    <a class="btn btn-primary" href="{% url 'ad_create' %}">Добавить объявление</a><br><br>
+    <h3>Все объявления:</h3><br>
     {% if ads %}
         {% for ad in ads %}
             <div class="ad-block card mb-4">

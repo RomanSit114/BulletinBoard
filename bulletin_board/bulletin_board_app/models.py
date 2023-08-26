@@ -3,16 +3,6 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Category(models.Model):
-    # TANKS = 'TA'
-    # HEALTH = 'HP'
-    # DD = 'DD'
-    # MERCHANTS = 'ME'
-    # GILDMASTERS = 'GM'
-    # QUESTGIVERS = 'QG'
-    # BLACKSMITHS = 'BS'
-    # LEATHERWORKERS = 'LW'
-    # POTIONS = 'PO'
-    # SPELLMASTERS = 'SM'
     TANKS = 'Танки'
     HEALTH = 'Хилы'
     DD = 'ДД'
@@ -35,7 +25,6 @@ class Category(models.Model):
         (POTIONS, 'Зельевары'),
         (SPELLMASTERS, 'Мастера заклинаний'),
     )
-    # categoryType = models.CharField(max_length=2, choices=CATEGORY_CHOICES, default=MERCHANTS)
     categoryType = models.TextField(choices=CATEGORY_CHOICES, default=MERCHANTS)
 
     def __str__(self):
@@ -68,10 +57,3 @@ class Ad(models.Model):
 
     def get_absolute_url(self):
         return f'/ads/ad/{self.id}'
-
-# class AdCategory(models.Model):
-#     adThrough = models.ForeignKey(Ad, on_delete=models.CASCADE)
-#     categoryThrough = models.ForeignKey(Category, on_delete=models.CASCADE)
-
-
-

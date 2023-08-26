@@ -3,7 +3,6 @@ from .models import *
 
 admin.site.register(Category)
 admin.site.register(Ad)
-# admin.site.register(AdCategory)
 admin.site.register(Comment)
 
 
