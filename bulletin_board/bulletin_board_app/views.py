@@ -11,6 +11,7 @@ from django.utils.decorators import method_decorator
 from django import forms
 from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
+# from .filters import AdFilterForm
 
 class AdsList(ListView):
     model = Ad
@@ -120,7 +121,6 @@ class CommentsOnMyAdsList(LoginRequiredMixin, ListView): # представле�
     model = Ad
     template_name = 'bulletin_board_app/comments_on_my_ads.html'
     context_object_name = 'ads'
-    # queryset = Ad.objects.all()
     ordering = ['-id']
     paginate_by = 10
 
@@ -137,4 +137,14 @@ class CommentsOnMyAdsList(LoginRequiredMixin, ListView): # представле�
                 ads_with_comments.append(ad)
 
         context['ads_with_comments'] = ads_with_comments
+
+        # для фильтрации откликов
+        selected_ad_id = self.request.GET.get('selected_ad')
+        if selected_ad_id:
+            selected_ad = Ad.objects.get(id=selected_ad_id)
+            context['selected_ad'] = selected_ad
+
+            comments_for_selected_ad = selected_ad.comments.all()
+            context['comments_for_selected_ad'] = comments_for_selected_ad
+
         return context
